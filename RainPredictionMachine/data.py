@@ -8,15 +8,15 @@ class clean_data_rpm():
     def __init__(self):
         self.files = None #instanciar files que ainda nao foi definido
     #Criando variáveis organizacionais
-    def get_data(self):
+    def get_data(self,n_arquivos):
         path = '../raw_data/SP' #caminho geral
         files = [f for f in listdir(path) if isfile(join(path, f))] #lista de nomes de arquivos de dados
         #Loop para fazer lista com os dataframes, ignorando o cabeçalho
         #Criando 4 novas features a partir de infos do cabeçalho
         df_list = []
-        for file in range(0,1):
-            df = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
-            lat_log_alt = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=4,
+        for file in range(0,n_arquivos):
+            df = pd.read_csv(f'{path}/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
+            lat_log_alt = pd.read_csv(f'{path}/{files[file]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
             df['Estaçao']=files[file].split('_')[4]
             df['Latitude']=lat_log_alt['valor'][0]
@@ -25,8 +25,13 @@ class clean_data_rpm():
             df_list.append(df)
         return df_list
 
+<<<<<<< HEAD
     def clean_data(self):
         df_list = self.get_data() #chamar função dentro de classe
+=======
+    def clean_data(self,n_arquivos):
+        df_list = self.get_data(n_arquivos) #chamar função dentro de classe
+>>>>>>> master
         #fundir os dataframes no dataframe vazio
         full_df = pd.concat(df_list)
         df2 = full_df.copy()

@@ -54,6 +54,7 @@ pypi_test:
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
+<<<<<<< HEAD
 # project id - replace with your GCP project id
 PROJECT_ID=rain-prediction-machine
 
@@ -72,5 +73,9 @@ create_bucket:
 PACKAGE_NAME=RainPredictionMachine
 FILENAME=Trainer
 
+=======
+PACKAGE_NAME=RainPredictionMachine
+FILENAME=Trainer
+>>>>>>> master
 run_locally:
 	@python -m ${PACKAGE_NAME}.${FILENAME}
