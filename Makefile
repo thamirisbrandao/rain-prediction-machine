@@ -53,3 +53,24 @@ pypi_test:
 
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
+
+# project id - replace with your GCP project id
+PROJECT_ID=rain-prediction-machine
+
+# bucket name - replace with your GCP bucket name
+BUCKET_NAME=rain-prediction-machine
+
+# choose your region from https://cloud.google.com/storage/docs/locations#available_locations
+REGION=us
+
+set_project:
+	@gcloud config set project ${PROJECT_ID}
+
+create_bucket:
+	@gsutil mb -l ${REGION} -p ${PROJECT_ID} gs://${BUCKET_NAME}
+
+PACKAGE_NAME=RainPredictionMachine
+FILENAME=Trainer
+
+run_locally:
+	@python -m ${PACKAGE_NAME}.${FILENAME}
