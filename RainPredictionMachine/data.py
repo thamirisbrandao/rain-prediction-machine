@@ -25,13 +25,8 @@ class clean_data_rpm():
             df_list.append(df)
         return df_list
 
-<<<<<<< HEAD
-    def clean_data(self):
-        df_list = self.get_data() #chamar função dentro de classe
-=======
     def clean_data(self,n_arquivos):
         df_list = self.get_data(n_arquivos) #chamar função dentro de classe
->>>>>>> master
         #fundir os dataframes no dataframe vazio
         full_df = pd.concat(df_list)
         df2 = full_df.copy()
