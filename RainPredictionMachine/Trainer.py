@@ -129,7 +129,7 @@ def pipe_creator(df):
 
     X_train_t = col_trans.fit_transform(X_train)
     X_test_t = col_trans.transform(X_test)
-    return X_train_t,X_test_t
+    return X_train_t,X_test_t, y_train, y_test
 
 
 if __name__ == "__main__":
