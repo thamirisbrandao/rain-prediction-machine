@@ -4,13 +4,11 @@ from os.path import isfile, join
 import numpy as np
 from sklearn.impute import KNNImputer
 from google.cloud import storage
-
 class CleanDataRpm():
     def __init__(self):
         self.files = None #SELF PARA VARIAVEIS QUE VAMOS USAR DEPOIS
         self.client = storage.Client()
     #Criando variáveis organizacionais
-
     def get_data(self, n_files):
         path = '../raw_data/SP' #caminho geral
         files = [f for f in listdir(path) if isfile(join(path, f))] #lista de nomes de arquivos de dados
@@ -18,8 +16,8 @@ class CleanDataRpm():
         #Criando 4 novas features a partir de infos do cabeçalho
         df_list = []
         for file in range(0,n_files):
-            df = pd.read_csv(f'{path}/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
-            lat_log_alt = pd.read_csv(f'{path}/{files[file]}', sep=';', skiprows=4,
+            df = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
+            lat_log_alt = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
             df['Estaçao']=files[file].split('_')[4]
             df['Latitude']=lat_log_alt['valor'][0]
@@ -27,8 +25,6 @@ class CleanDataRpm():
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
         return df_list
-
-
     def get_gcp_data(self, n_files): #get_gcp_data para rodar no colab
         bucket = self.client.get_bucket('rain-prediction-machine') #
         files = [str(blob.name) for blob in bucket.list_blobs()] #blob = arquivo bucket = diretorio
@@ -43,15 +39,11 @@ class CleanDataRpm():
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
         return df_list
-
     def clean_data(self, n_files, gcp=False):
         if gcp:
             df_list = self.get_gcp_data(n_files)
         else:
             df_list = self.get_data(n_files) #chamar função dentro de classe
-
-    def clean_data(self,n_files):
-        df_list = self.get_data(n_files) #chamar função dentro de classe
         #fundir os dataframes no dataframe vazio
         full_df = pd.concat(df_list)
         df2 = full_df.copy()
@@ -91,14 +83,12 @@ class CleanDataRpm():
         #Transformando chuva em variável categórica na coluna 'classe_chuva'
         df2['classe_chuva'] = df2['Chuva'].apply(lambda x: self.classe_chuva(x)) #chamar função dentro de classe
         return df2
-
     #---------------------transformando valores nan para 0 da radiação de noite---------------------
     def tratar_radiacao(self, hora,radiacao):
         if (hora.hour >= 22) or (hora.hour <= 8):
             if np.isnan(radiacao):
                 radiacao = 0
         return radiacao
-
     #---------------------transformando a chuva em variável categórica---------------------
     def classe_chuva(self, precipitacao):
         mm=precipitacao
@@ -113,15 +103,14 @@ class CleanDataRpm():
         else:
             chuva = 'forte'
         return chuva
-
 if __name__ == "__main__":
     instan_clean_data_rpm = CleanDataRpm() #instanciar a classe
     #Testes para ver se as duas funões estão funcionando
     #Open data
-    #print('abrindo os dados')
-    #instan_clean_data_rpm.get_data()
+#    print('abrindo os dados')
+ #   instan_clean_data_rpm.get_data()
     #Clean data
-    #print('limpando os dados')
-    #instan_clean_data_rpm.clean_data()
+  #  print('limpando os dados')
+   # instan_clean_data_rpm.clean_data()
     df = instan_clean_data_rpm.clean_data(2, gcp=True)
     print(len(df))
