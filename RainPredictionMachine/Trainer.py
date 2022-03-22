@@ -103,12 +103,16 @@ def pipe_creator(df):
                                     'Umid_min',
                                     'Umid',
                                     'Rajada_vento',
-                                    'Vel_vento',
+                                    'Vel_vento',])])
                                     #'Chuva',
 
+<<<<<<< HEAD
     ]) #VER remainder = ‘passthrough’
 
     #def RNN_model():
+=======
+    def RNN_model():
+>>>>>>> master
 
         ###########################
         # 1. Define architecture  #
@@ -162,7 +166,12 @@ def pipe_creator(df):
 
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
+<<<<<<< HEAD
+
+    return full_pipe, X_train, y_train
+=======
     return full_pipe, y_train
+>>>>>>> f59f2672547d658166a93ee897f15ec95a0f8a40
 
 
 if __name__ == "__main__":
