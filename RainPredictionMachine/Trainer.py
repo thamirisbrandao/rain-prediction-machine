@@ -4,6 +4,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 import joblib
 import pandas as pd
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 #class Normalizing(BaseEstimator, TransformerMixin):
@@ -65,10 +67,10 @@ def pipe_creator(df):
 
     #----------------ordinal encoding pipeline----------------
     #fazendo encoding de variáveis categóricas
-    from sklearn.preprocessing import OrdinalEncoder
-    ordinal_encoding_pipe = Pipeline([
-        ('ordinal_encoding', OrdinalEncoder()),
-    ])
+    #from sklearn.preprocessing import OrdinalEncoder
+    #ordinal_encoding_pipe = Pipeline([
+    #    ('ordinal_encoding', OrdinalEncoder()),
+    #])
 
     #----------------onehot encoding pipeline----------------
     #fazendo encoding de variáveis categóricas
@@ -103,10 +105,8 @@ def pipe_creator(df):
                                     'Umid_min',
                                     'Umid',
                                     'Rajada_vento',
-                                    'Vel_vento',
+                                    'Vel_vento',])])
                                     #'Chuva',
-
-    ])
 
     def RNN_model():
 
@@ -164,16 +164,11 @@ def pipe_creator(df):
     #instanciar pipe
     #aplicar
 
-<<<<<<< HEAD
-    #full_pipe.fit(X_train)
-    full_pipe.fit(X_train)
-
-=======
 
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
->>>>>>> 3f29fe4debe151320174930323b786b74a1d6fcb
-    return full_pipe, y_train
+    return full_pipe, X_train, y_train
+
 
 
 if __name__ == "__main__":
