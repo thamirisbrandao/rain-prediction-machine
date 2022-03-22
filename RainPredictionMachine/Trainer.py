@@ -37,8 +37,6 @@ from tensorflow.keras.layers import Masking
 #        X_[self.feature_name] = Masking(X_[self.feature_name],value=-10000)
 #        X_[self.feature_name] = pad_sequences(X_[self.feature_name], padding='post', value=-10000)
 #        return X_
-
-
 def pipe_creator(df):
     '''
     this function gets all the data, cleans it and inserts into the pipeline for RNN model fitting.
@@ -48,7 +46,6 @@ def pipe_creator(df):
     from sklearn.model_selection import train_test_split
     X = df.copy()
     y = pd.DataFrame(df['classe_chuva'])
-
     #----------------label encoder----------------
     #fazendo encoding de variáveis categóricas
     from sklearn.preprocessing import LabelEncoder
@@ -57,36 +54,30 @@ def pipe_creator(df):
     from tensorflow.keras.utils import to_categorical
     y_cat = to_categorical(y_enc)
     X_train, X_test, y_train, y_test = train_test_split(X, y_cat, test_size=0.3) #separando train e test
-
     #----------------scaling pipeline----------------
     #fazendo escalonamento
     from sklearn.preprocessing import StandardScaler
     scaling_pipe = Pipeline([
         ('stdscaler', StandardScaler()),
     ])
-
     #----------------ordinal encoding pipeline----------------
     #fazendo encoding de variáveis categóricas
-    #from sklearn.preprocessing import OrdinalEncoder
-    #ordinal_encoding_pipe = Pipeline([
-    #    ('ordinal_encoding', OrdinalEncoder()),
-    #])
-
+    # from sklearn.preprocessing import OrdinalEncoder
+    # ordinal_encoding_pipe = Pipeline([
+    #     ('ordinal_encoding', OrdinalEncoder()),
+    # ])
     #----------------onehot encoding pipeline----------------
     #fazendo encoding de variáveis categóricas
     from sklearn.preprocessing import OneHotEncoder
     onehot_encoding_pipe = Pipeline([
         ('onehot_encoding', OneHotEncoder()),
     ])
-
     #----------------padding and masking pipe----------------
     #fazendo encoding de variáveis categóricas
     #Padding and masking class
-
     #padding_masking_pipe = Pipeline([
     #    ('Padding and masking', Padding_masking()),
     #])
-
     #----------------column transformer----------------
     #realizando as operações em paralelo
     from sklearn.compose import ColumnTransformer
@@ -105,11 +96,8 @@ def pipe_creator(df):
                                     'Umid_min',
                                     'Umid',
                                     'Rajada_vento',
-                                    'Vel_vento',])])
-                                    #'Chuva',
-
-    def RNN_model():
-
+                                    'Vel_vento'])])
+    # def RNN_model():
         ###########################
         # 1. Define architecture  #
         ###########################
@@ -118,40 +106,27 @@ def pipe_creator(df):
             # One consequence is that here, you cannot yet print
             # the model's summary. It will be known after fitting it
             # to X_train_preprocessed, y_train
-
-        norm = Normalization()
-        model = Sequential()
-        model.add(norm)
-        model.add(LSTM(units=20, activation='tanh'))
-        model.add(Dense(10, activation="tanh"))
-        model.add(Dense(4, activation="softmax"))
-
-        model.compile(loss='categorical_crossentropy',
-                        optimizer='rmsprop',
-                        metrics=['accuracy'])
-
-        ###########################
-        # 2. Compile model        #
-        ###########################
-        model.compile(loss = 'binary_crossentropy',
-                    optimizer = 'adam',
-                    metrics = ['accuracy'])
-
-        return model
-
+        # norm = Normalization()
+        # model = Sequential()
+        # model.add(norm)
+        # model.add(LSTM(units=20, activation='tanh'))
+        # model.add(Dense(10, activation="tanh"))
+        # model.add(Dense(4, activation="softmax"))
+        # model.compile(loss='categorical_crossentropy',
+        #                 optimizer='rmsprop',
+        #                 metrics=['accuracy'])
+        # return model
     #from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
     #RNN_model = KerasClassifier(build_fn = RNN_model(),
     #                                   epochs = 10000,
     #                                   batch_size = 32,
     #                                   verbose = 1)
-
     #----------------total pipeline----------------
     #concatenar treinamento do modelo
     full_pipe = Pipeline([
         ('column_stransformer', col_trans),
     #    ("deep_learning" , RNN_model ),
     ])
-
     #----------------GridSearch pipeline----------------
     #aplicar gridsearch
     #from sklearn.model_selection import GridSearchCV
@@ -163,14 +138,9 @@ def pipe_creator(df):
     #    scoring="recall")
     #instanciar pipe
     #aplicar
-
-
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
     return full_pipe, X_train, y_train
-
-
-
 if __name__ == "__main__":
     #----------------fetch the dataset----------------
     import pandas as pd
