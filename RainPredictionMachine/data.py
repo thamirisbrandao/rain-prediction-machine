@@ -3,20 +3,33 @@ from os import listdir
 from os.path import isfile, join
 import numpy as np
 from sklearn.impute import KNNImputer
+from google.cloud import storage
 
-class clean_data_rpm():
+class CleanDataRpm():
     def __init__(self):
-        self.files = None #instanciar files que ainda nao foi definido
+        self.files = None #SELF PARA VARIAVEIS QUE VAMOS USAR DEPOIS
+        self.client = storage.Client()
     #Criando variáveis organizacionais
+<<<<<<< HEAD
     def get_data(self,n_files):
+=======
+    def get_data(self, n_files):
+>>>>>>> master
         path = '../raw_data/SP' #caminho geral
         files = [f for f in listdir(path) if isfile(join(path, f))] #lista de nomes de arquivos de dados
         #Loop para fazer lista com os dataframes, ignorando o cabeçalho
         #Criando 4 novas features a partir de infos do cabeçalho
         df_list = []
+<<<<<<< HEAD
         for file in range(0,n_files):
             df = pd.read_csv(f'{path}/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
             lat_log_alt = pd.read_csv(f'{path}/{files[file]}', sep=';', skiprows=4,
+=======
+
+        for file in range(0,n_files):
+            df = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
+            lat_log_alt = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=4,
+>>>>>>> master
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
             df['Estaçao']=files[file].split('_')[4]
             df['Latitude']=lat_log_alt['valor'][0]
@@ -26,8 +39,32 @@ class clean_data_rpm():
         return df_list
 
 
+<<<<<<< HEAD
 
 
+=======
+    def get_gcp_data(self, n_files): #get_gcp_data para rodar no colab
+        bucket = self.client.get_bucket('rain-prediction-machine') #
+        files = [str(blob.name) for blob in bucket.list_blobs()] #blob = arquivo bucket = diretorio
+        df_list = []
+        for file in range(0,n_files):
+            df = pd.read_csv(f'gs://rain-prediction-machine/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
+            lat_log_alt = pd.read_csv(f'gs://rain-prediction-machine/{files[file]}', sep=';', skiprows=4,
+                            nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
+            df['Estaçao']=files[file].split('_')[4]
+            df['Latitude']=lat_log_alt['valor'][0]
+            df['Longitude']=lat_log_alt['valor'][1]
+            df['Altitude']=lat_log_alt['valor'][2]
+            df_list.append(df)
+        return df_list
+
+    def clean_data(self, n_files, gcp=False): 
+        if gcp:
+            df_list = self.get_gcp_data(n_files)
+        else:
+            df_list = self.get_data(n_files) #chamar função dentro de classe
+=======
+>>>>>>> master
     def clean_data(self,n_files):
         df_list = self.get_data(n_files) #chamar função dentro de classe
         #fundir os dataframes no dataframe vazio
@@ -96,8 +133,10 @@ if __name__ == "__main__":
     instan_clean_data_rpm = clean_data_rpm() #instanciar a classe
     #Testes para ver se as duas funões estão funcionando
     #Open data
-    print('abrindo os dados')
-    instan_clean_data_rpm.get_data()
+#    print('abrindo os dados')
+ #   instan_clean_data_rpm.get_data()
     #Clean data
-    print('limpando os dados')
-    instan_clean_data_rpm.clean_data()
+  #  print('limpando os dados')
+   # instan_clean_data_rpm.clean_data()
+    df = instan_clean_data_rpm.clean_data(2, gcp=True)
+    print(len(df))
