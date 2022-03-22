@@ -164,9 +164,15 @@ def pipe_creator(df):
     #instanciar pipe
     #aplicar
 
+<<<<<<< HEAD
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
 
+=======
+
+    #full_pipe.fit(X_train)
+    full_pipe.fit(X_train)
+>>>>>>> 3f29fe4debe151320174930323b786b74a1d6fcb
     return full_pipe, y_train
 
 
