@@ -89,7 +89,6 @@ def pipe_creator(df):
     #realizando as operações em paralelo
     from sklearn.compose import ColumnTransformer
     col_trans = ColumnTransformer([
-        ('encoding', onehot_encoding_pipe , ['classe_chuva']),
         ('scaling ', scaling_pipe,[ 'Pres',
                                     'Pres_max',
                                     'Pres_min',
@@ -105,15 +104,53 @@ def pipe_creator(df):
                                     'Umid',
                                     'Rajada_vento',
                                     'Vel_vento',
-                                    'Chuva'])
+                                    #'Chuva',
+
     ])
+
+    def RNN_model():
+
+        ###########################
+        # 1. Define architecture  #
+        ###########################
+            # Notice that we don't specify the input shape yet...
+            # ... as we don't know the shape post-preprocessing!
+            # One consequence is that here, you cannot yet print
+            # the model's summary. It will be known after fitting it
+            # to X_train_preprocessed, y_train
+
+        norm = Normalization()
+        model = Sequential()
+        model.add(norm)
+        model.add(LSTM(units=20, activation='tanh'))
+        model.add(Dense(10, activation="tanh"))
+        model.add(Dense(4, activation="softmax"))
+
+        model.compile(loss='categorical_crossentropy',
+                        optimizer='rmsprop',
+                        metrics=['accuracy'])
+
+        ###########################
+        # 2. Compile model        #
+        ###########################
+        model.compile(loss = 'binary_crossentropy',
+                    optimizer = 'adam',
+                    metrics = ['accuracy'])
+
+        return model
+
+    #from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+    #RNN_model = KerasClassifier(build_fn = RNN_model(),
+    #                                   epochs = 10000,
+    #                                   batch_size = 32,
+    #                                   verbose = 1)
 
     #----------------total pipeline----------------
     #concatenar treinamento do modelo
-    #full_pipe = Pipeline([
-    #    ('column stransformer', col_trans),
-    #    ( , ),
-    #])
+    full_pipe = Pipeline([
+        ('column_stransformer', col_trans),
+    #    ("deep_learning" , RNN_model ),
+    ])
 
     #----------------GridSearch pipeline----------------
     #aplicar gridsearch
@@ -127,18 +164,19 @@ def pipe_creator(df):
     #instanciar pipe
     #aplicar
 
-    X_train_t = col_trans.fit_transform(X_train)
-    X_test_t = col_trans.transform(X_test)
-    return X_train_t,X_test_t
+    #full_pipe.fit(X_train)
+    full_pipe.fit(X_train)
+
+    return full_pipe, y_train
 
 
 if __name__ == "__main__":
-        #----------------fetch the dataset----------------
+    #----------------fetch the dataset----------------
     import pandas as pd
-    from RainPredictionMachine.data import clean_data_rpm
-    df = clean_data_rpm()
-    df = df.clean_data(1)
     # criar dataframe com os dados tratados a
     # partir da classe (possivelmente importar outro pacote para incluir no dataframe)
-    X_train_t, X_test_t = train_data(df)
-    joblib.dump(self.pipeline, 'model.joblib')
+    from RainPredictionMachine.data import CleanDataRpm
+    clean_data = CleanDataRpm()
+    df = clean_data.clean_data(1)
+    pipe_treinado = pipe_creator(df)
+    joblib.dump(pipe_treinado, 'model.joblib')
