@@ -4,26 +4,13 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 import joblib
 import pandas as pd
-
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
-#class Normalizing(BaseEstimator, TransformerMixin):
-#    def __init__(self,feature_name,additional_param=None):
-#        self.feature_name = feature_name
-#        self.additional_param = additional_param
-#    def fit(self,X,y = None):
-#        return self
-#    def transform(self,X,y=None):
-#        X_ = X.copy()
-#        normalizer = Normalization()
-#        normalizer.adapt(X_[self.feature_name])
-#        normalizer(X_[self.feature_name])[0]
-#        return X_
-#normalizing_pipe = Pipeline([
-#    ('Normalizing', Normalizing()),
-#])
-
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Masking
+
+
 #class Padding_masking(BaseEstimator, TransformerMixin):
 #    def __init__(self,feature_name,additional_param=None):
 #        self.feature_name = feature_name
@@ -65,10 +52,10 @@ def pipe_creator(df):
 
     #----------------ordinal encoding pipeline----------------
     #fazendo encoding de variáveis categóricas
-    from sklearn.preprocessing import OrdinalEncoder
-    ordinal_encoding_pipe = Pipeline([
-        ('ordinal_encoding', OrdinalEncoder()),
-    ])
+    # from sklearn.preprocessing import OrdinalEncoder
+    # ordinal_encoding_pipe = Pipeline([
+    #     ('ordinal_encoding', OrdinalEncoder()),
+    # ])
 
     #----------------onehot encoding pipeline----------------
     #fazendo encoding de variáveis categóricas
@@ -103,10 +90,9 @@ def pipe_creator(df):
                                     'Umid_min',
                                     'Umid',
                                     'Rajada_vento',
-                                    'Vel_vento',])])
-                                    #'Chuva',
+                                    'Vel_vento'])])
 
-    def RNN_model():
+    # def RNN_model():
 
         ###########################
         # 1. Define architecture  #
@@ -117,25 +103,20 @@ def pipe_creator(df):
             # the model's summary. It will be known after fitting it
             # to X_train_preprocessed, y_train
 
-        norm = Normalization()
-        model = Sequential()
-        model.add(norm)
-        model.add(LSTM(units=20, activation='tanh'))
-        model.add(Dense(10, activation="tanh"))
-        model.add(Dense(4, activation="softmax"))
+        # norm = Normalization()
+        # model = Sequential()
+        # model.add(norm)
+        # model.add(LSTM(units=20, activation='tanh'))
+        # model.add(Dense(10, activation="tanh"))
+        # model.add(Dense(4, activation="softmax"))
 
-        model.compile(loss='categorical_crossentropy',
-                        optimizer='rmsprop',
-                        metrics=['accuracy'])
+        # model.compile(loss='categorical_crossentropy',
+        #                 optimizer='rmsprop',
+        #                 metrics=['accuracy'])
 
-        ###########################
-        # 2. Compile model        #
-        ###########################
-        model.compile(loss = 'binary_crossentropy',
-                    optimizer = 'adam',
-                    metrics = ['accuracy'])
 
-        return model
+
+        # return model
 
     #from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
     #RNN_model = KerasClassifier(build_fn = RNN_model(),
@@ -165,12 +146,7 @@ def pipe_creator(df):
 
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
-<<<<<<< HEAD
-
     return full_pipe, X_train, y_train
-=======
-    return full_pipe, y_train
->>>>>>> f59f2672547d658166a93ee897f15ec95a0f8a40
 
 
 if __name__ == "__main__":
