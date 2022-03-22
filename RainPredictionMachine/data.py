@@ -9,12 +9,13 @@ class clean_data_rpm():
         self.files = None #instanciar files que ainda nao foi definido
     #Criando variáveis organizacionais
     def get_data(self):
+
         path = '../raw_data/SP' #caminho geral
         files = [f for f in listdir(path) if isfile(join(path, f))] #lista de nomes de arquivos de dados
-        #Loop para fazer lista com os dataframes, ignorando o cabeçalho 
+        #Loop para fazer lista com os dataframes, ignorando o cabeçalho
         #Criando 4 novas features a partir de infos do cabeçalho
         df_list = []
-        for file in range(0,1):
+        for file in range(0,int(62)):
             df = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
             lat_log_alt = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
@@ -25,7 +26,7 @@ class clean_data_rpm():
             df_list.append(df)
         return df_list
 
-    def clean_data(self): 
+    def clean_data(self):
         df_list = self.get_data() #chamar função dentro de classe
         #fundir os dataframes no dataframe vazio
         full_df = pd.concat(df_list)
@@ -56,8 +57,8 @@ class clean_data_rpm():
         df2['datahora'] = df2.apply(lambda row: pd.to_datetime(f'{row["Data"]} {row["Hora(UTC)"]}'), axis=1)
         #dropar colunas 'Data' e 'Hora(UTC)'
         df2.drop(columns=["Data"], inplace=True)
-        df2.drop(columns=["Hora(UTC)"], inplace=True)  
-        #Tratando valores nulos de radiação de noite 
+        df2.drop(columns=["Hora(UTC)"], inplace=True)
+        #Tratando valores nulos de radiação de noite
         df2['Radiacao'] = df2.apply(lambda x: self.tratar_radiacao(x['datahora'],x['Radiacao']),axis=1) #chamar função dentro de classe
         #Fazer imputer nas colunas --- precisa ser aqui pq a radiacao tem que ter trocado o nan da noite por 0
         imputer = KNNImputer(n_neighbors=2)
@@ -73,7 +74,7 @@ class clean_data_rpm():
             if np.isnan(radiacao):
                 radiacao = 0
         return radiacao
-    
+
     #---------------------transformando a chuva em variável categórica---------------------
     def classe_chuva(self, precipitacao):
         mm=precipitacao
