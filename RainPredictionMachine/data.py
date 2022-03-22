@@ -49,7 +49,7 @@ class CleanDataRpm():
             df_list = self.get_gcp_data(n_files)
         else:
             df_list = self.get_data(n_files) #chamar função dentro de classe
-=======
+            
     def clean_data(self,n_files):
         df_list = self.get_data(n_files) #chamar função dentro de classe
         #fundir os dataframes no dataframe vazio
@@ -115,7 +115,7 @@ class CleanDataRpm():
         return chuva
 
 if __name__ == "__main__":
-    instan_clean_data_rpm = clean_data_rpm() #instanciar a classe
+    instan_clean_data_rpm = CleanDataRpm() #instanciar a classe
     #Testes para ver se as duas funões estão funcionando
     #Open data
 #    print('abrindo os dados')
