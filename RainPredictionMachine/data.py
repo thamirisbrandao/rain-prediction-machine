@@ -13,9 +13,10 @@ class clean_data_rpm():
     def get_data(self, n_files):
         path = '../raw_data/SP' #caminho geral
         files = [f for f in listdir(path) if isfile(join(path, f))] #lista de nomes de arquivos de dados
-        #Loop para fazer lista com os dataframes, ignorando o cabeçalho 
+        #Loop para fazer lista com os dataframes, ignorando o cabeçalho
         #Criando 4 novas features a partir de infos do cabeçalho
         df_list = []
+
         for file in range(0,n_files):
             df = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
             lat_log_alt = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=4,
@@ -26,6 +27,7 @@ class clean_data_rpm():
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
         return df_list
+
 
     def get_gcp_data(self, n_files): #get_gcp_data para rodar no colab
         bucket = self.client.get_bucket('rain-prediction-machine') #
@@ -47,6 +49,9 @@ class clean_data_rpm():
             df_list = self.get_gcp_data(n_files)
         else:
             df_list = self.get_data(n_files) #chamar função dentro de classe
+=======
+    def clean_data(self,n_files):
+        df_list = self.get_data(n_files) #chamar função dentro de classe
         #fundir os dataframes no dataframe vazio
         full_df = pd.concat(df_list)
         df2 = full_df.copy()
@@ -76,8 +81,8 @@ class clean_data_rpm():
         df2['datahora'] = df2.apply(lambda row: pd.to_datetime(f'{row["Data"]} {row["Hora(UTC)"]}'), axis=1)
         #dropar colunas 'Data' e 'Hora(UTC)'
         df2.drop(columns=["Data"], inplace=True)
-        df2.drop(columns=["Hora(UTC)"], inplace=True)  
-        #Tratando valores nulos de radiação de noite 
+        df2.drop(columns=["Hora(UTC)"], inplace=True)
+        #Tratando valores nulos de radiação de noite
         df2['Radiacao'] = df2.apply(lambda x: self.tratar_radiacao(x['datahora'],x['Radiacao']),axis=1) #chamar função dentro de classe
         #Fazer imputer nas colunas --- precisa ser aqui pq a radiacao tem que ter trocado o nan da noite por 0
         imputer = KNNImputer(n_neighbors=2)
@@ -93,7 +98,7 @@ class clean_data_rpm():
             if np.isnan(radiacao):
                 radiacao = 0
         return radiacao
-    
+
     #---------------------transformando a chuva em variável categórica---------------------
     def classe_chuva(self, precipitacao):
         mm=precipitacao
@@ -107,6 +112,7 @@ class clean_data_rpm():
             chuva = 'moderada'
         else:
             chuva = 'forte'
+        return chuva
 
 if __name__ == "__main__":
     instan_clean_data_rpm = clean_data_rpm() #instanciar a classe
@@ -119,4 +125,6 @@ if __name__ == "__main__":
    # instan_clean_data_rpm.clean_data()
     df = instan_clean_data_rpm.clean_data(2, gcp=True)
     print(len(df))
+    print('limpando os dados')
+    instan_clean_data_rpm.clean_data()
 
