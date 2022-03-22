@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.impute import KNNImputer
 from google.cloud import storage
 
-class clean_data_rpm():
+class CleanDataRpm():
     def __init__(self):
         self.files = None #SELF PARA VARIAVEIS QUE VAMOS USAR DEPOIS
         self.client = storage.Client()
@@ -125,6 +125,3 @@ if __name__ == "__main__":
    # instan_clean_data_rpm.clean_data()
     df = instan_clean_data_rpm.clean_data(2, gcp=True)
     print(len(df))
-    print('limpando os dados')
-    instan_clean_data_rpm.clean_data()
-
