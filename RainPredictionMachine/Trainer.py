@@ -88,8 +88,8 @@ def pipe_creator(df):
     #----------------column transformer----------------
     #realizando as operações em paralelo
     from sklearn.compose import ColumnTransformer
-    col_trans = ColumnTransformer([
-        ('scaling ', scaling_pipe,[ 'Pres',
+    col_trans = ColumnTransformer(
+        'scaling ', scaling_pipe,[ 'Pres',
                                     'Pres_max',
                                     'Pres_min',
                                     'Radiacao',
@@ -106,9 +106,9 @@ def pipe_creator(df):
                                     'Vel_vento',
                                     #'Chuva',
 
-    ])
+    ]) #VER remainder = ‘passthrough’
 
-    def RNN_model():
+    #def RNN_model():
 
         ###########################
         # 1. Define architecture  #
@@ -119,25 +119,20 @@ def pipe_creator(df):
             # the model's summary. It will be known after fitting it
             # to X_train_preprocessed, y_train
 
-        norm = Normalization()
-        model = Sequential()
-        model.add(norm)
-        model.add(LSTM(units=20, activation='tanh'))
-        model.add(Dense(10, activation="tanh"))
-        model.add(Dense(4, activation="softmax"))
+        # norm = Normalization()
+        # model = Sequential()
+        # model.add(norm)
+        # model.add(LSTM(units=20, activation='tanh'))
+        # model.add(Dense(10, activation="tanh"))
+        # model.add(Dense(4, activation="softmax"))
 
-        model.compile(loss='categorical_crossentropy',
-                        optimizer='rmsprop',
-                        metrics=['accuracy'])
+        # model.compile(loss='categorical_crossentropy',
+        #                 optimizer='rmsprop',
+        #                 metrics=['accuracy'])
 
-        ###########################
-        # 2. Compile model        #
-        ###########################
-        model.compile(loss = 'binary_crossentropy',
-                    optimizer = 'adam',
-                    metrics = ['accuracy'])
 
-        return model
+
+        # return model
 
     #from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
     #RNN_model = KerasClassifier(build_fn = RNN_model(),
