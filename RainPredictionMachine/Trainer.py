@@ -4,6 +4,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 import joblib
 import pandas as pd
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 #class Normalizing(BaseEstimator, TransformerMixin):
@@ -165,12 +167,8 @@ def pipe_creator(df):
 
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
-<<<<<<< HEAD
 
     return full_pipe, X_train, y_train
-=======
-    return full_pipe, y_train
->>>>>>> f59f2672547d658166a93ee897f15ec95a0f8a40
 
 
 if __name__ == "__main__":
