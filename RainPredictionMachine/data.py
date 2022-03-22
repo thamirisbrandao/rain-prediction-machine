@@ -85,11 +85,8 @@ class clean_data_rpm():
             chuva = 'fraca'
         elif mm >5.0 and mm<=25.0:
             chuva = 'moderada'
-        elif mm >25.0 and mm<=50:
-            chuva = 'forte'
         else:
-            chuva = 'muito forte'
-        return chuva
+            chuva = 'forte'
 
 if __name__ == "__main__":
     instan_clean_data_rpm = clean_data_rpm() #instanciar a classe
