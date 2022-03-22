@@ -103,10 +103,8 @@ def pipe_creator(df):
                                     'Umid_min',
                                     'Umid',
                                     'Rajada_vento',
-                                    'Vel_vento',
+                                    'Vel_vento',])])
                                     #'Chuva',
-
-    ])
 
     def RNN_model():
 
@@ -167,7 +165,7 @@ def pipe_creator(df):
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
 
-    return full_pipe, y_train
+    return full_pipe, X_train, y_train
 
 
 if __name__ == "__main__":
