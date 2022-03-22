@@ -4,7 +4,7 @@ from os.path import isfile, join
 import numpy as np
 from sklearn.impute import KNNImputer
 
-class clean_data_rpm():
+class CleanDataRpm():
     def __init__(self):
         self.files = None #instanciar files que ainda nao foi definido
     #Criando variáveis organizacionais
@@ -92,11 +92,11 @@ class clean_data_rpm():
         return chuva
 
 if __name__ == "__main__":
-    instan_clean_data_rpm = clean_data_rpm() #instanciar a classe
+    instan_CleanDataRpm = CleanDataRpm(1) #instanciar a classe
     #Testes para ver se as duas funões estão funcionando
     #Open data
     print('abrindo os dados')
-    instan_clean_data_rpm.get_data()
+    instan_CleanDataRpm.get_data()
     #Clean data
     print('limpando os dados')
-    instan_clean_data_rpm.clean_data()
+    instan_CleanDataRpm.clean_data()
