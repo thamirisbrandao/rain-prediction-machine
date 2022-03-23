@@ -10,8 +10,8 @@ class CleanDataRpm():
         self.client = storage.Client()
     #Criando variáveis organizacionais
     def get_data(self, n_files):
-        path = '../raw_data/SP' #caminho geral
-        files = [f for f in listdir(path) if isfile(join(path, f))] #lista de nomes de arquivos de dados
+        pathh = '../raw_data/SP' #caminho geral
+        files = [f for f in listdir(pathh) if isfile(join(pathh, f))] #lista de nomes de arquivos de dados
         #Loop para fazer lista com os dataframes, ignorando o cabeçalho
         #Criando 4 novas features a partir de infos do cabeçalho
         df_list = []
@@ -104,6 +104,7 @@ class CleanDataRpm():
             chuva = 'forte'
         return chuva
 if __name__ == "__main__":
+
     instan_clean_data_rpm = CleanDataRpm() #instanciar a classe
     #Testes para ver se as duas funões estão funcionando
     #Open data
@@ -112,5 +113,5 @@ if __name__ == "__main__":
     #Clean data
   #  print('limpando os dados')
    # instan_clean_data_rpm.clean_data()
-    df = instan_clean_data_rpm.clean_data(2, gcp=True)
+    df = instan_clean_data_rpm.clean_data(2, gcp=False)
     print(len(df))
