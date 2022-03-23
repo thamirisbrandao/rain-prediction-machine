@@ -9,17 +9,7 @@ from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Masking
-#class Padding_masking(BaseEstimator, TransformerMixin):
-#    def __init__(self,feature_name,additional_param=None):
-#        self.feature_name = feature_name
-#        self.additional_param = additional_param
-#    def fit(self,X,y = None):
-#        return self
-#    def transform(self,X,y=None):
-#        X_ = X.copy()
-#        X_[self.feature_name] = Masking(X_[self.feature_name],value=-10000)
-#        X_[self.feature_name] = pad_sequences(X_[self.feature_name], padding='post', value=-10000)
-#        return X_
+
 def pipe_creator(df):
     '''
     this function gets all the data, cleans it and inserts into the pipeline for RNN model fitting.

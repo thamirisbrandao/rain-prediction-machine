@@ -49,7 +49,7 @@ class CleanDataRpm():
         df2 = full_df.copy()
         #dropar coluna inútil que foi criada por ter ; no final da linha do arquivo csv
         df2.drop(columns=["Unnamed: 19"],inplace=True)
-        #mudar nome das colunas
+
         df2= df2.rename(columns={'Data': 'Data',
                                     'Hora UTC': 'Hora(UTC)',
                                     'PRECIPITAÇÃO TOTAL, HORÁRIO (mm)': 'Chuva',
