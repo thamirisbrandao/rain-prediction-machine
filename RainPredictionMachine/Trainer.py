@@ -9,7 +9,36 @@ from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Masking
+<<<<<<< HEAD
 
+=======
+from google.cloud import storage
+import pandas as pd
+from sklearn import linear_model
+import numpy as np
+import joblib
+### GCP configuration - - - - - - - - - - - - - - - - - - -
+
+BUCKET_NAME = 'rain-prediction-machine' # GCP Storage
+MODEL_NAME = 'rpmodel' # model folder name (will contain the folders for all trained model versions)
+MODEL_VERSION = 'v1_vitor_isa' # model version folder name (where the trained model.joblib file will be stored)
+def upload_model_to_gcp(file):
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(f'models/{file}')
+    blob.upload_from_filename(file)
+#class Padding_masking(BaseEstimator, TransformerMixin):
+#    def __init__(self,feature_name,additional_param=None):
+#        self.feature_name = feature_name
+#        self.additional_param = additional_param
+#    def fit(self,X,y = None):
+#        return self
+#    def transform(self,X,y=None):
+#        X_ = X.copy()
+#        X_[self.feature_name] = Masking(X_[self.feature_name],value=-10000)
+#        X_[self.feature_name] = pad_sequences(X_[self.feature_name], padding='post', value=-10000)
+#        return X_
+>>>>>>> 27909b06b71ff1aec46fb3949a929dd86ed6d356
 def pipe_creator(df):
     '''
     this function gets all the data, cleans it and inserts into the pipeline for RNN model fitting.
@@ -114,13 +143,25 @@ def pipe_creator(df):
     #full_pipe.fit(X_train)
     full_pipe.fit(X_train)
     return full_pipe, X_train, y_train
+
 if __name__ == "__main__":
     #----------------fetch the dataset----------------
     import pandas as pd
     # criar dataframe com os dados tratados a
     # partir da classe (possivelmente importar outro pacote para incluir no dataframe)
     from RainPredictionMachine.data import CleanDataRpm
-    clean_data = CleanDataRpm()
-    df = clean_data.clean_data(1)
+    cleaner = CleanDataRpm()
+    df = cleaner.clean_data(5, gcp=True)
+    print('arquivos carregados')
     pipe_treinado = pipe_creator(df)
+<<<<<<< HEAD
     joblib.dump(pipe_treinado, 'model.joblib')
+=======
+    print('pipe treinado')
+    joblib.dump(df, 'df5.joblib')
+    upload_model_to_gcp('df5.joblib')
+ #   joblib.dump(pipe_treinado, 'model.joblib')
+ #   upload_model_to_gcp('model.joblib')
+
+
+>>>>>>> 27909b06b71ff1aec46fb3949a929dd86ed6d356
