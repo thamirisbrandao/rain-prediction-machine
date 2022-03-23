@@ -29,6 +29,12 @@ joblib
 memoized-property
 termcolor
 
+<<<<<<< HEAD
+=======
+fastapi
+uvicorn
+
+>>>>>>> master
 #website
 streamlit
 requests
