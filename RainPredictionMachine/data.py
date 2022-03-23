@@ -48,7 +48,7 @@ class CleanDataRpm():
         full_df = pd.concat(df_list)
         df2 = full_df.copy()
         #dropar coluna inútil que foi criada por ter ; no final da linha do arquivo csv
-        df2.drop(columns=["Unnamed: 19"],inplace=True)
+        df2.drop(columns=["Unnamed: 19", "Estaçao"],inplace=True)
 
         df2= df2.rename(columns={'Data': 'Data',
                                     'Hora UTC': 'Hora(UTC)',
@@ -82,6 +82,8 @@ class CleanDataRpm():
         df2[colunas_imputer] = imputer.fit_transform(df2[colunas_imputer])
         #Transformando chuva em variável categórica na coluna 'classe_chuva'
         df2['classe_chuva'] = df2['Chuva'].apply(lambda x: self.classe_chuva(x)) #chamar função dentro de classe
+        # #dropar coluna Chuva
+        # df2.drop(columns=["Chuva"],inplace=True)
         return df2
     #---------------------transformando valores nan para 0 da radiação de noite---------------------
     def tratar_radiacao(self, hora,radiacao):
@@ -95,13 +97,13 @@ class CleanDataRpm():
         if np.isnan(mm):
             chuva = "NaN"
         if mm == 0:
-            chuva = 'nao chove'
+            chuva = 0 #'nao chove'
         elif mm >0 and mm <=5.0:
-            chuva = 'fraca'
+            chuva = 1 #'fraca'
         elif mm >5.0 and mm<=25.0:
-            chuva = 'moderada'
+            chuva = 2 #'moderada'
         else:
-            chuva = 'forte'
+            chuva = 3 #'forte'
         return chuva
 if __name__ == "__main__":
     instan_clean_data_rpm = CleanDataRpm() #instanciar a classe
