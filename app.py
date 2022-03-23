@@ -23,6 +23,7 @@ option = st.selectbox(
      'SAO PAULO - INTERLAGOS', 'SAO PAULO - MIRANTE', 'SAO SEBASTIAO',
      'SAO SIMAO', 'SOROCABA', 'TAUBATE', 'TUPA', 'VALPARAISO', 'VOTUPORANGA'))
 
+
 st.write('You selected:', option)
 
 
