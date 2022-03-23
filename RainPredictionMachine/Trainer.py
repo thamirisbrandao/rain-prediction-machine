@@ -9,9 +9,6 @@ from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Masking
-<<<<<<< HEAD
-
-=======
 from google.cloud import storage
 import pandas as pd
 from sklearn import linear_model
@@ -38,7 +35,6 @@ def upload_model_to_gcp(file):
 #        X_[self.feature_name] = Masking(X_[self.feature_name],value=-10000)
 #        X_[self.feature_name] = pad_sequences(X_[self.feature_name], padding='post', value=-10000)
 #        return X_
->>>>>>> 27909b06b71ff1aec46fb3949a929dd86ed6d356
 def pipe_creator(df):
     '''
     this function gets all the data, cleans it and inserts into the pipeline for RNN model fitting.
@@ -154,14 +150,8 @@ if __name__ == "__main__":
     df = cleaner.clean_data(5, gcp=True)
     print('arquivos carregados')
     pipe_treinado = pipe_creator(df)
-<<<<<<< HEAD
-    joblib.dump(pipe_treinado, 'model.joblib')
-=======
     print('pipe treinado')
     joblib.dump(df, 'df5.joblib')
     upload_model_to_gcp('df5.joblib')
  #   joblib.dump(pipe_treinado, 'model.joblib')
  #   upload_model_to_gcp('model.joblib')
-
-
->>>>>>> 27909b06b71ff1aec46fb3949a929dd86ed6d356
