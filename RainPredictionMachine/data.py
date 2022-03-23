@@ -103,6 +103,24 @@ class CleanDataRpm():
         else:
             chuva = 'forte'
         return chuva
+
+    def get_lat_lon(self, n_files):
+        pathh = '../raw_data/SP' #caminho geral
+        files = [f for f in listdir(pathh) if isfile(join(pathh, f))]
+        estacao, lat, lon = [], [], []
+
+        for file in range(0,n_files):
+            lat_lon_alt = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=4,
+                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
+            est=files[file].split('_')[4]
+            latt=lat_lon_alt['valor'][0]
+            lonn=lat_lon_alt['valor'][1]
+            estacao.append(est)
+            lat.append(latt)
+            lon.append(lonn)
+
+        return lat, lon, estacao
+
 if __name__ == "__main__":
 
     instan_clean_data_rpm = CleanDataRpm() #instanciar a classe
