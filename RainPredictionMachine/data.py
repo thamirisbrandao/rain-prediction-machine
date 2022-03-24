@@ -32,8 +32,8 @@ class CleanDataRpm():
             if cidade in self.files[i]:
                 file.append(self.files[i])
 
-        df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
-        for ii in range(0, len(file) - 1):
+        df_list = [] #aqui eu crio dataframe soh com a cidade selecionada
+        for ii in range(0, len(file)):
             df = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
             lat_log_alt = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
@@ -42,6 +42,7 @@ class CleanDataRpm():
             df['Longitude']=lat_log_alt['valor'][1]
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
+        #breakpoint()
         return df_list
 #ve se essa parte esta certa
     def get_gcp_data(self, n_cidade): #get_gcp_data para rodar no colab
@@ -53,8 +54,8 @@ class CleanDataRpm():
             if cidade in files[i]:
                 file.append(files[i])
 
-        df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
-        for ii in range(0, len(file) - 1):
+        df_list = [] #aqui eu crio dataframe soh com a cidade selecionada
+        for ii in range(0, len(file)):
             df = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
             lat_log_alt = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
@@ -71,11 +72,14 @@ class CleanDataRpm():
         else:
             df_list = self.get_data(n_cidade) #chamar função dentro de classe
         #fundir os dataframes no dataframe vazio
-        full_df = pd.concat(df_list)
+        if len(df_list) > 1:
+            full_df = pd.concat(df_list)
+        else:
+            full_df = df_list[0]
         df2 = full_df.copy()
         #dropar coluna inútil que foi criada por ter ; no final da linha do arquivo csv
         df2.drop(columns=["Unnamed: 19"],inplace=True)
-        #mudar nome das colunas
+
         df2= df2.rename(columns={'Data': 'Data',
                                     'Hora UTC': 'Hora(UTC)',
                                     'PRECIPITAÇÃO TOTAL, HORÁRIO (mm)': 'Chuva',
@@ -108,6 +112,8 @@ class CleanDataRpm():
         df2[colunas_imputer] = imputer.fit_transform(df2[colunas_imputer])
         #Transformando chuva em variável categórica na coluna 'classe_chuva'
         df2['classe_chuva'] = df2['Chuva'].apply(lambda x: self.classe_chuva(x)) #chamar função dentro de classe
+        # dropar coluna Chuva
+        # df2.drop(columns=["Chuva"],inplace=True)
         return df2
     #---------------------transformando valores nan para 0 da radiação de noite---------------------
     def tratar_radiacao(self, hora,radiacao):
@@ -121,13 +127,13 @@ class CleanDataRpm():
         if np.isnan(mm):
             chuva = "NaN"
         if mm == 0:
-            chuva = 'nao chove'
+            chuva = 0 #'nao chove'
         elif mm >0 and mm <=5.0:
-            chuva = 'fraca'
+            chuva = 1 #'fraca'
         elif mm >5.0 and mm<=25.0:
-            chuva = 'moderada'
+            chuva = 2 #'moderada'
         else:
-            chuva = 'forte'
+            chuva = 3 #'forte'
         return chuva
 
     def get_lat_lon(self, n_files):
@@ -149,10 +155,10 @@ if __name__ == "__main__":
     instan_clean_data_rpm = CleanDataRpm() #instanciar a classe
     #Testes para ver se as duas funões estão funcionando
     #Open data
-    #    print('abrindo os dados')
-    #   instan_clean_data_rpm.get_data()
+    #print('abrindo os dados')
+    #instan_clean_data_rpm.get_data()
     #Clean data
-    #  print('limpando os dados')
-    # instan_clean_data_rpm.clean_data()
-    df = instan_clean_data_rpm.clean_data(2, gcp=False)
+    #print('limpando os dados')
+    #instan_clean_data_rpm.clean_data()
+    df = instan_clean_data_rpm.clean_data(0, gcp=False)
     print(len(df))
