@@ -33,14 +33,14 @@ class CleanDataRpm():
                 file.append(self.files[i])
 
         df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
-        for ii in range(0, len(file) - 1):
+        for ii in range(0, len(file)):
             df = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
-            lat_log_alt = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=4,
-                            nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
+            # lat_log_alt = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=4,
+            #                 nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
             # df['Estaçao']=file[ii].split('_')[4]
-            df['Latitude']=lat_log_alt['valor'][0]
-            df['Longitude']=lat_log_alt['valor'][1]
-            df['Altitude']=lat_log_alt['valor'][2]
+            # df['Latitude']=lat_log_alt['valor'][0]
+            # df['Longitude']=lat_log_alt['valor'][1]
+            # df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
         return df_list
 #ve se essa parte esta certa
@@ -54,15 +54,15 @@ class CleanDataRpm():
                 file.append(files[i])
 
         df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
-        for ii in range(0, len(file) - 1):
+        for ii in range(0, len(file)):
             df = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
-            lat_log_alt = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=4,
-                            nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
+            # lat_log_alt = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=4,
+            #                 nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
             # df['Estaçao']=files[file].split('_')[4]
-            df['Latitude']=lat_log_alt['valor'][0]
-            df['Longitude']=lat_log_alt['valor'][1]
-            df['Altitude']=lat_log_alt['valor'][2]
-            df_list.append(df)
+            # df['Latitude']=lat_log_alt['valor'][0]
+            # df['Longitude']=lat_log_alt['valor'][1]
+            # df['Altitude']=lat_log_alt['valor'][2]
+            # df_list.append(df)
         return df_list
 
     def clean_data(self, n_cidade, gcp=False):
@@ -126,8 +126,10 @@ class CleanDataRpm():
             chuva = 'fraca'
         elif mm >5.0 and mm<=25.0:
             chuva = 'moderada'
-        else:
+        elif mm >25.0 and mm<=50.0:
             chuva = 'forte'
+        else:
+            chuva = 'muito forte'
         return chuva
 
     def get_lat_lon(self, n_files):
