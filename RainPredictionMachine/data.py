@@ -1,49 +1,75 @@
 import pandas as pd
 from os import listdir
+import os
 from os.path import isfile, join
 import numpy as np
 from sklearn.impute import KNNImputer
 from google.cloud import storage
+
 class CleanDataRpm():
+
     def __init__(self):
         self.files = None #SELF PARA VARIAVEIS QUE VAMOS USAR DEPOIS
         self.client = storage.Client()
+        self.pathh = os.path.join(os.path.dirname(os.path.dirname(__file__)),'raw_data','SP') #caminho geral
+        self.files = [f for f in listdir(self.pathh) if isfile(join(self.pathh, f))] #lista de nomes de arquivos de dados
+        self.cidades=['BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO', 'BERTIOGA',
+        'BRAGANCA PAULISTA', 'CACHOEIRA PAULISTA', 'CAMPOS DO JORDAO',
+        'CASA BRANCA', 'DRACENA', 'FRANCA', 'IGUAPE', 'ITAPEVA', 'ITAPIRA',
+        'ITATIAIA', 'ITUVERAVA', 'LINS', 'MARILIA', 'OURINHOS', 'PARATI',
+        'PIRACICABA', 'PRADOPOLIS', 'PRESIDENTE PRUDENTE', 'RANCHARIA',
+        'SAO CARLOS', 'SAO LUIS DO PARAITINGA', 'SAO MIGUEL ARCANJO',
+        'SAO PAULO - INTERLAGOS', 'SAO PAULO - MIRANTE', 'SAO SEBASTIAO',
+        'SAO SIMAO', 'SOROCABA', 'TAUBATE', 'TUPA', 'VALPARAISO', 'VOTUPORANGA']
     #Criando variáveis organizacionais
-    def get_data(self, n_files):
-        path = '../raw_data/SP' #caminho geral
-        files = [f for f in listdir(path) if isfile(join(path, f))] #lista de nomes de arquivos de dados
+
+    def get_data(self,n_cidade):#escolher um numero de 0 a 35
         #Loop para fazer lista com os dataframes, ignorando o cabeçalho
         #Criando 4 novas features a partir de infos do cabeçalho
-        df_list = []
-        for file in range(0,n_files):
-            df = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
-            lat_log_alt = pd.read_csv(f'../raw_data/SP/{files[file]}', sep=';', skiprows=4,
+        file = []
+        cidade = self.cidades[n_cidade]
+        for i in range(0, 63):#aqui eu seleciono somente os arquivos com barreto no nome
+            if cidade in self.files[i]:
+                file.append(self.files[i])
+
+        df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
+        for ii in range(0, len(file) - 1):
+            df = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
+            lat_log_alt = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
-            df['Estaçao']=files[file].split('_')[4]
+            # df['Estaçao']=file[ii].split('_')[4]
             df['Latitude']=lat_log_alt['valor'][0]
             df['Longitude']=lat_log_alt['valor'][1]
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
         return df_list
-    def get_gcp_data(self, n_files): #get_gcp_data para rodar no colab
+#ve se essa parte esta certa
+    def get_gcp_data(self, n_cidade): #get_gcp_data para rodar no colab
         bucket = self.client.get_bucket('rain-prediction-machine') #
         files = [str(blob.name) for blob in bucket.list_blobs()] #blob = arquivo bucket = diretorio
-        df_list = []
-        for file in range(0,n_files):
-            df = pd.read_csv(f'gs://rain-prediction-machine/{files[file]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
-            lat_log_alt = pd.read_csv(f'gs://rain-prediction-machine/{files[file]}', sep=';', skiprows=4,
+        file = []
+        cidade = self.cidades[n_cidade]
+        for i in range(0, 63):#aqui eu seleciono somente os arquivos com barreto no nome
+            if cidade in files[i]:
+                file.append(files[i])
+
+        df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
+        for ii in range(0, len(file) - 1):
+            df = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
+            lat_log_alt = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
-            df['Estaçao']=files[file].split('_')[4]
+            # df['Estaçao']=files[file].split('_')[4]
             df['Latitude']=lat_log_alt['valor'][0]
             df['Longitude']=lat_log_alt['valor'][1]
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
         return df_list
-    def clean_data(self, n_files, gcp=False):
+
+    def clean_data(self, n_cidade, gcp=False):
         if gcp:
-            df_list = self.get_gcp_data(n_files)
+            df_list = self.get_gcp_data(n_cidade)
         else:
-            df_list = self.get_data(n_files) #chamar função dentro de classe
+            df_list = self.get_data(n_cidade) #chamar função dentro de classe
         #fundir os dataframes no dataframe vazio
         full_df = pd.concat(df_list)
         df2 = full_df.copy()
@@ -103,14 +129,30 @@ class CleanDataRpm():
         else:
             chuva = 'forte'
         return chuva
+
+    def get_lat_lon(self, n_files):
+        estacao, lat, lon = [], [], []
+        for file in range(0,n_files):
+            lat_lon_alt = pd.read_csv(f'{self.pathh}/{self.files[file]}', sep=';', skiprows=4,
+                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
+            est=self.files[file].split('_')[4]
+            latt=lat_lon_alt['valor'][0]
+            lonn=lat_lon_alt['valor'][1]
+            estacao.append(est)
+            lat.append(latt)
+            lon.append(lonn)
+
+        return lat, lon, estacao
+
 if __name__ == "__main__":
+
     instan_clean_data_rpm = CleanDataRpm() #instanciar a classe
     #Testes para ver se as duas funões estão funcionando
     #Open data
-#    print('abrindo os dados')
- #   instan_clean_data_rpm.get_data()
+    #    print('abrindo os dados')
+    #   instan_clean_data_rpm.get_data()
     #Clean data
-  #  print('limpando os dados')
-   # instan_clean_data_rpm.clean_data()
-    df = instan_clean_data_rpm.clean_data(2, gcp=True)
+    #  print('limpando os dados')
+    # instan_clean_data_rpm.clean_data()
+    df = instan_clean_data_rpm.clean_data(2, gcp=False)
     print(len(df))
