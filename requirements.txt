@@ -29,12 +29,9 @@ joblib
 memoized-property
 termcolor
 
-<<<<<<< HEAD
-=======
 fastapi
 uvicorn
 
->>>>>>> master
 #website
-streamlit
+streamlit>=0.87
 requests
