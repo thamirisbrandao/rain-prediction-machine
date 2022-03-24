@@ -1,5 +1,4 @@
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, LSTM, GRU
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 from google.cloud import storage
 from tensorflow.keras.callbacks import EarlyStopping
