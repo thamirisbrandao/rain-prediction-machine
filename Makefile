@@ -67,7 +67,7 @@ create_bucket:
 
 run_locally:
 	@python -m ${PACKAGE_NAME}.${FILENAME}
-	
+
 install_requirements:
 	@pip install -r requirements.txt
 
@@ -91,6 +91,19 @@ clean:
 	@rm -fr build dist
 	@rm -fr rain-prediction-machine-*.dist-info
 	@rm -fr rain-prediction-machine.egg-info
+
+streamlit:
+	-@streamlit run app.py
+
+heroku_login:
+	-@heroku login
+
+heroku_create_app:
+	-@heroku create ${APP_NAME}
+
+deploy_heroku:
+	-@git push heroku master
+	-@heroku ps:scale web=1
 
 install:
 	@pip install . -U

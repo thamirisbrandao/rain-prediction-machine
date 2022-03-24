@@ -33,5 +33,5 @@ fastapi
 uvicorn
 
 #website
-streamlit
+streamlit>=0.87
 requests
