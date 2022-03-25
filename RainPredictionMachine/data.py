@@ -33,7 +33,7 @@ class CleanDataRpm():
                 file.append(self.files[i])
 
         df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
-        for ii in range(0, len(file) - 1):
+        for ii in range(0, len(file)):
             df = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
             lat_log_alt = pd.read_csv(f'{self.pathh}/{file[ii]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
@@ -43,6 +43,7 @@ class CleanDataRpm():
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
         return df_list
+
 #ve se essa parte esta certa
     def get_gcp_data(self, n_cidade): #get_gcp_data para rodar no colab
         bucket = self.client.get_bucket('rain-prediction-machine') #
@@ -54,7 +55,7 @@ class CleanDataRpm():
                 file.append(files[i])
 
         df_list = [] #aqui eu crioo dataframe soh com a cidade selecionada
-        for ii in range(0, len(file) - 1):
+        for ii in range(0, len(file)):
             df = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=8, encoding="ISO-8859-1", decimal=',')
             lat_log_alt = pd.read_csv(f'gs://rain-prediction-machine/{file[ii]}', sep=';', skiprows=4,
                             nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
@@ -131,18 +132,20 @@ class CleanDataRpm():
         return chuva
 
     def get_lat_lon(self, n_files):
-        estacao, lat, lon = [], [], []
+        altitude, estacao, lat, lon = [], [], [], []
         for file in range(0,n_files):
             lat_lon_alt = pd.read_csv(f'{self.pathh}/{self.files[file]}', sep=';', skiprows=4,
                              nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
             est=self.files[file].split('_')[4]
             latt=lat_lon_alt['valor'][0]
             lonn=lat_lon_alt['valor'][1]
+            alti=lat_log_alt['valor'][2]
+            altitude.append(alti)
             estacao.append(est)
             lat.append(latt)
             lon.append(lonn)
 
-        return lat, lon, estacao
+        return lat, lon, estacao, altitude
 
 if __name__ == "__main__":
 
