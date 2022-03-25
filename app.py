@@ -1,3 +1,5 @@
+from curses.panel import bottom_panel
+from tkinter import W
 import streamlit as st
 import requests
 import pandas as pd
@@ -12,11 +14,12 @@ import matplotlib.pyplot as plt
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 st.title('Alerta Chuva SP')
-st.write("### Atenção ⛈️")
-st.write(f"Chuva forte a muito forte paras as seguintes cidades: ")
 
-st.header('Previsão e alerta de chuvas para as próximas 24h')
+st.write("### Atenção :warning:")
 
+st.write(f"Chuva forte ou muito forte paras as seguintes cidades: ")
+
+st.header('Previsão de chuva para as próximas 24h')
 
 '''
 
@@ -50,6 +53,17 @@ n_cidade=data.cidades.index(option)
 df=data.clean_data(n_cidade)
 # st.write('temp',df.Temp.iloc[-1])
 
+# st.write(f"#### {option} {d1}")
+st.write('#### Previsão do tempo')
+
+if df.Chuva.iloc[-1] == 0:
+    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])}.')
+if df.Chuva.iloc[-1] > 0 and df.Chuva.iloc[-1] < 25:
+    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ☔')
+else:
+    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ⛈️')
+
+
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Temperatura", f'{df.Temp.iloc[-1]} °C',
             f'{round(df.Temp.iloc[-1]-df.Temp.iloc[-24],ndigits=1)} °C')
@@ -57,7 +71,7 @@ col2.metric("Vento", f'{round(df.Vel_vento.iloc[-1],ndigits=1)} m/s',
         f'{round(df.Vel_vento.iloc[-1]-df.Vel_vento.iloc[-24],ndigits=1)} m/s')
 col3.metric("Umidade", f'{df.Umid.iloc[-1]} %',
         f'{round(df.Umid.iloc[-1]-df.Umid.iloc[-24],ndigits=1)} %')
-col4.metric("Chuva", f'{df.Chuva.iloc[-1]} mm',
+col4.metric("Precipitação", f'{df.Chuva.iloc[-1]} mm',
         f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
 
 
@@ -129,36 +143,74 @@ layer = pdk.Layer(
 
 # Set the viewport location
 view_state = pdk.ViewState(latitude=-21.980353, longitude=-47.883927, zoom=5)
-
 st.subheader(f'Previsão de Chuva para SP em {dia0}')
 st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state,
                          map_style="mapbox://styles/mapbox/light-v10", tooltip=coord['Chuva']))
 
 # st.map(coord)
-
 '''
 
 
 
 '''
-
-def plot_line(days,min_t,max_t):
-        fig = plt.figure(figsize=(15,5))
-        plt.plot(days[-24*7:],max_t[-24*7:],color='green',linestyle='dashdot',linewidth = 1,marker='o',markerfacecolor='red',markersize=7)
+def plot_temp(days,min_t,max_t):
+        fig = plt.figure(figsize=(20,8))
+        plt.plot(days[-24*7:],max_t[-24*7:],color='green',linestyle='dashdot',linewidth = 1,
+                 marker='o',markerfacecolor='red',markersize=7)
         plt.plot(days[-24*7:],min_t[-24*7:],color='orange',linestyle='dashdot',linewidth = 1,marker='o',markerfacecolor='blue',markersize=7)
-        plt.ylim(min(min_t)-4,max(max_t)+4)
-        # plt.xticks(days)
-        # x_y_axis=plt.gca()
+        plt.ylim(min(min_t)-2,max(max_t)+2)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
         plt.grid(True,color='brown')
-        plt.legend(["Maximum Temperaure","Minimum Temperature"],loc=1)
-        plt.xlabel('Dates(mm/dd)')
-        plt.ylabel('Temperature')
-        plt.title('6-Day Weather Forecast')
+        plt.legend(["Temperatura Máxima","Temperatura Mínima"],loc=0, fontsize=20)
+        # plt.xlabel('Data(mm/dd)')
+        plt.ylabel('Temperatura °C', fontsize=25)
+        # plt.title('6-Day Weather Forecast')
         st.pyplot(fig)
         # return fig
 
-plot_line(df.datahora,df.Temp_min,df.Temp_max)
-print('teste fig')
+st.subheader('Temperatura do ar (°C) nos útimos sete dias')
+plot_temp(df.datahora,df.Temp_min,df.Temp_max)
+
+'''
+
+
+'''
+def plot_vento(days,vel_vento):
+        fig = plt.figure(figsize=(20,8))
+        plt.plot(days[-24*7:],vel_vento[-24*7:],color='blue',linestyle='-',linewidth = 1,
+                 marker='o',markerfacecolor='blue',markersize=7)
+        plt.ylim(0, max(vel_vento)+1)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
+        plt.grid(True,color='brown')
+        plt.legend(["Intensidade do vento"],loc=0, fontsize=20)
+        # plt.xlabel('Data(mm/dd)')
+        plt.ylabel('Vento m/s', fontsize=25)
+        # plt.title('6-Day Weather Forecast')
+        st.pyplot(fig)
+        # return fig
+
+st.subheader('Intensidade do vento (m/s) nos útimos sete dias')
+plot_vento(df.datahora,df.Vel_vento)
+
+def plot_umi(days,umidade):
+        fig = plt.figure(figsize=(20,8))
+        plt.plot(days[-24*7:],umidade[-24*7:],color='blue',linestyle='-',linewidth = 1,
+                 marker='o',markerfacecolor='blue',markersize=7)
+        plt.ylim(0, 110)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
+        plt.grid(True,color='brown')
+        plt.legend(["Umidade Relativa %"],loc=0, fontsize=20)
+        # plt.xlabel('Data(mm/dd)')
+        plt.ylabel('Umidade Relativa %', fontsize=25)
+        # plt.title('6-Day Weather Forecast')
+        st.pyplot(fig)
+        # return fig
+
+st.subheader('Umidade Relativa % nos útimos sete dias')
+plot_umi(df.datahora,df.Umid)
 
 
 # st.line_chart(df.Temp.iloc[-72:])
