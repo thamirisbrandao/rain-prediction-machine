@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import joblib
 from RainPredictionMachine.data import CleanDataRpm
+from tensorflow.keras.layers import LSTM, Dense
 ### GCP configuration - - - - - - - - - - - - - - - - - - -
 
 BUCKET_NAME = 'rain-prediction-machine' # GCP Storage
@@ -98,7 +99,7 @@ if __name__ == "__main__":
         df = cleaner.clean_data(index, gcp=False)
         print('arquivos carregados')
         #split do treino e test
-        X_train, y_train, X_test, y_test = split_train_test(df, 6000,72)
+        X_train, y_train, X_test, y_test = split_train_test(df, 10,72)
         print('split treino e teste')
         #criando o modelo ate o compile
         model = init_model(X_train)

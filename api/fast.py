@@ -33,10 +33,13 @@ def predict():
     read_csv_to_api = pd.read_csv('/home/thamirisbrandao/code/thamirisbrandao/rain-prediction-machine/raw_data/info_to_api.csv')
     codigosestacao = read_csv_to_api.CodigoEstacao.to_list()
     nome_modelos = read_csv_to_api.Estacao.apply(lambda name: name.split(' ')[-1]).to_list()
-    codigosestacao = ['A748']
-    nome_modelos = ['BARRETOS']
-
+    #codigosestacao = ['A748']
+    #nome_modelos = ['BARRETOS']
+    
+    lista_df = []
+    lista_df_passado = []
     for codigoestacao, nome_modelo in zip(codigosestacao, nome_modelos):
+        print(nome_modelo)
         #Pegando a  hora atual e diminuindo 3 antes
         hora_now = datetime.datetime.now()
         dia_atual = hora_now.strftime("%Y-%m-%d")
@@ -51,6 +54,9 @@ def predict():
         dc_nome = df['DC_NOME'][0]
         df.drop(columns=['DC_NOME', 'UF', 'HR_MEDICAO', 'CD_ESTACAO', 'DT_MEDICAO', 'TEM_SEN'], inplace=True)
         df.dropna(inplace=True)
+        if df.shape[0] < 72:
+            print(f'tirar {nome_modelo}')
+            continue
         df = df.iloc[-48:].reset_index(drop=True)
         df = df[['CHUVA', 'PRE_INS', 'PRE_MAX', 'PRE_MIN', 'RAD_GLO', 'TEM_INS', 'PTO_INS', 'TEM_MAX', 'TEM_MIN', 'PTO_MAX', 'PTO_MIN', 'UMD_MAX', 'UMD_MIN', 'UMD_INS', 'VEN_DIR', 'VEN_RAJ', 'VEN_VEL', 'VL_LATITUDE', 'VL_LONGITUDE']]
         df = df.rename(columns={'CHUVA': 'Chuva',
@@ -78,14 +84,22 @@ def predict():
         df['Altitude'] = alti
         df = df.astype(float)
         X_test = pd.DataFrame(df).to_numpy().reshape(1,48,20)
-        model = joblib.load(f'../{nome_modelo}.joblib') #retorna um pipeline
+        model = joblib.load(f'../models_v1/{nome_modelo}.joblib') #retorna um pipeline
         y_pred = model.predict(X_test)
         # Ajustando o df para ler no front end
         df_pred = pd.DataFrame(y_pred)
         df_pred['dc_nome'] = dc_nome
         df_pred['Latitude'] = df['Latitude']
         df_pred['Longitude'] = df['Longitude']
+        df['dc_nome'] = dc_nome
+        lista_df.append(df_pred)
+        lista_df_passado.append(df.to_dict())
+    pred_all_esta = pd.concat(lista_df)
+    pred_all_esta.to_csv('exemplo_nat_all.csv')
     #concatenar todos os df pred
     #enviar o df pred concatenado para google cloud
-    #enviar df com velocidade do vento atualizado para a Nat
-    return {'Armazenada todas as estacoes ': y_pred}
+    #enviar df com velocidade do vento, umidade e temp max e temp min atualizado para a Nat
+    return {"Predict": pred_all_esta.to_dict(), "Passado": lista_df_passado}
+
+    #Fazer o dumping do predict no google cloud, criar diretorio para receber os arquivos predict csv
+    #Fazer endpoint para ler no bucket
