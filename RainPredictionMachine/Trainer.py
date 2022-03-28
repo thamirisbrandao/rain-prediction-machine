@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import joblib
 from RainPredictionMachine.data import CleanDataRpm
+from tensorflow.keras.layers import LSTM, Dense
 ### GCP configuration - - - - - - - - - - - - - - - - - - -
 
 BUCKET_NAME = 'rain-prediction-machine' # GCP Storage
@@ -17,7 +18,7 @@ MODEL_VERSION = 'v1_vitor_isa' # model version folder name (where the trained mo
 def upload_model_to_gcp(file):
     client = storage.Client()
     bucket = client.bucket(BUCKET_NAME)
-    blob = bucket.blob(f'models/{file}')
+    blob = bucket.blob(f'model_thami/{file}')
     blob.upload_from_filename(file)
 
 def subsample_sequence(df, length):
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     from RainPredictionMachine.data import CleanDataRpm
     cleaner = CleanDataRpm()
     for index,estacao in enumerate(cleaner.cidades):
-        df = cleaner.clean_data(index, gcp=False)
+        df = cleaner.clean_data(index, gcp=True)
         print('arquivos carregados')
         #split do treino e test
         X_train, y_train, X_test, y_test = split_train_test(df, 6000,72)
@@ -107,9 +108,14 @@ if __name__ == "__main__":
         #fit e early stopping
         model = fit_model(model, X_train, y_train)
         print('fit e early stopping')
+<<<<<<< HEAD
         joblib.dump(model, f'{estacao}_v1.joblib')
 
 
 
 
+=======
+        joblib.dump(model, f'{estacao}.joblib')
+        upload_model_to_gcp(f'{estacao}.joblib')
+>>>>>>> master
 

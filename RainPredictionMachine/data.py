@@ -11,8 +11,8 @@ class CleanDataRpm():
     def __init__(self):
         self.files = None #SELF PARA VARIAVEIS QUE VAMOS USAR DEPOIS
         self.client = storage.Client()
-        self.pathh = os.path.join(os.path.dirname(os.path.dirname(__file__)),'raw_data','SP') #caminho geral
-        self.files = [f for f in listdir(self.pathh) if isfile(join(self.pathh, f))] #lista de nomes de arquivos de dados
+       # self.pathh = os.path.join(os.path.dirname(os.path.dirname(__file__)),'raw_data','SP') #caminho geral
+       # self.files = [f for f in listdir(self.pathh) if isfile(join(self.pathh, f))] #lista de nomes de arquivos de dados
         self.cidades=['BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO', 'BERTIOGA',
         'BRAGANCA PAULISTA', 'CACHOEIRA PAULISTA', 'CAMPOS DO JORDAO',
         'CASA BRANCA', 'DRACENA', 'FRANCA', 'IGUAPE', 'ITAPEVA', 'ITAPIRA',
