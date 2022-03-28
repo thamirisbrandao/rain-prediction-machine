@@ -1,0 +1,17 @@
+# data science
+numpy
+pandas
+scikit-learn
+tensorflow
+
+# API
+gcsfs
+google-cloud-storage
+fastapi
+uvicorn
+
+# utilities
+joblib
+
+#website
+requests
