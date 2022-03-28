@@ -43,7 +43,7 @@ class CleanDataRpm():
             df['Longitude']=lat_log_alt['valor'][1]
             df['Altitude']=lat_log_alt['valor'][2]
             df_list.append(df)
-        #breakpoint()
+
         return df_list
 
 #ve se essa parte esta certa
@@ -140,20 +140,17 @@ class CleanDataRpm():
         return chuva
 
     def get_lat_lon(self, n_files):
-        altitude, estacao, lat, lon = [], [], [], []
+        estacao, lat, lon = [], [], []
         for file in range(0,n_files):
             lat_lon_alt = pd.read_csv(f'{self.pathh}/{self.files[file]}', sep=';', skiprows=4,
                              nrows=3, encoding="ISO-8859-1", decimal=',', names=['lat_lon_alt','valor'])
             est=self.files[file].split('_')[4]
             latt=lat_lon_alt['valor'][0]
             lonn=lat_lon_alt['valor'][1]
-            alti=lat_log_alt['valor'][2]
-            altitude.append(alti)
             estacao.append(est)
             lat.append(latt)
             lon.append(lonn)
-
-        return lat, lon, estacao, altitude
+        return lat, lon, estacao
 
 if __name__ == "__main__":
 

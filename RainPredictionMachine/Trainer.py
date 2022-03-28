@@ -1,4 +1,5 @@
 from tensorflow.keras import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 from google.cloud import storage
 from tensorflow.keras.callbacks import EarlyStopping
@@ -109,4 +110,3 @@ if __name__ == "__main__":
         print('fit e early stopping')
         joblib.dump(model, f'{estacao}.joblib')
         upload_model_to_gcp(f'{estacao}.joblib')
-
