@@ -5,6 +5,8 @@ import pytz
 import requests
 import datetime
 import joblib
+from google.cloud import storage
+import tensorflow as tf
 
 app = FastAPI()
 
@@ -15,6 +17,12 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods permite qlqr tipo de metodo para acessar
     allow_headers=["*"],  # Allows all headers
 )
+#Função para fazer o dumping do predict no google cloud, criar diretorio front para receber os arquivos predict e passado.csv
+def upload_csv_to_gcp(file):
+        client = storage.Client()
+        bucket = client.bucket('rain-prediction-machine')
+        blob = bucket.blob(f'front/{file}')
+        blob.upload_from_filename(file)
 
 @app.get("/")
 def index():
@@ -30,7 +38,7 @@ def index():
 
 def predict():
     #ajustar csv do google cloud
-    read_csv_to_api = pd.read_csv('/home/thamirisbrandao/code/thamirisbrandao/rain-prediction-machine/raw_data/info_to_api.csv')
+    read_csv_to_api = pd.read_csv('gs://rain-prediction-machine/front/info_to_api.csv')
     codigosestacao = read_csv_to_api.CodigoEstacao.to_list()
     nome_modelos = read_csv_to_api.Estacao.apply(lambda name: name.split(' ')[-1]).to_list()
     #codigosestacao = ['A748']
@@ -79,27 +87,42 @@ def predict():
                                         'VL_LATITUDE': 'Latitude',
                                         'VL_LONGITUDE': 'Longitude'})
         #ajustar caminho para pegar os dados de maneira generica
-        alti = read_csv_to_api[read_csv_to_api['CodigoEstacao'] == codigoestacao]['Altitude'].values[0]
+        #alti = read_csv_to_api[read_csv_to_api['CodigoEstacao'] == codigoestacao]['Altitude'].values[0]
         #Adicionando coluna que nao veio da API do INMET
-        df['Altitude'] = alti
+       # df['Altitude'] = alti
         df = df.astype(float)
-        X_test = pd.DataFrame(df).to_numpy().reshape(1,48,20)
-        model = joblib.load(f'../models_v1/{nome_modelo}.joblib') #retorna um pipeline
+        latitude = df['Latitude']
+        longitude = df['Longitude']
+        df = df.drop(columns = ['Latitude', 'Longitude'])
+        X_test = pd.DataFrame(df).to_numpy().reshape(1,48,17)
+        gcs_path = f'gs://rain-prediction-machine/models/{nome_modelo}.joblib'
+        model = joblib.load(tf.io.gfile.GFile(gcs_path, 'rb')) #para ler um joblib precisa da ajuda do tensor flow
         y_pred = model.predict(X_test)
         # Ajustando o df para ler no front end
         df_pred = pd.DataFrame(y_pred)
         df_pred['dc_nome'] = dc_nome
-        df_pred['Latitude'] = df['Latitude']
-        df_pred['Longitude'] = df['Longitude']
+        df_pred['Latitude'] = latitude
+        df_pred['Longitude'] = longitude
         df['dc_nome'] = dc_nome
         lista_df.append(df_pred)
-        lista_df_passado.append(df.to_dict())
+        lista_df_passado.append(df)
     pred_all_esta = pd.concat(lista_df)
     pred_all_esta.to_csv('exemplo_nat_all.csv')
+    upload_csv_to_gcp('exemplo_nat_all.csv')
+    pd.concat(lista_df_passado).to_csv('df_passad.csv')
+    upload_csv_to_gcp('df_passad.csv')
     #concatenar todos os df pred
     #enviar o df pred concatenado para google cloud
     #enviar df com velocidade do vento, umidade e temp max e temp min atualizado para a Nat
     return {"Predict": pred_all_esta.to_dict(), "Passado": lista_df_passado}
 
-    #Fazer o dumping do predict no google cloud, criar diretorio para receber os arquivos predict csv
-    #Fazer endpoint para ler no bucket
+    
+#Fazer endpoint para ler no bucket
+@app.get("/bucket")
+def read():
+    prev = pd.read_csv('gs://rain-prediction-machine/front/exemplo_nat_all.csv')
+    passa = pd.read_csv('gs://rain-prediction-machine/front/df_passad.csv')
+    return {'Previsao': prev.to_dict(), 'Passado': passa.to_dict()} #api so le dict e lista
+    
+#Deixar API online para desenvolvedores
+
