@@ -108,14 +108,5 @@ if __name__ == "__main__":
         #fit e early stopping
         model = fit_model(model, X_train, y_train)
         print('fit e early stopping')
-<<<<<<< HEAD
-        joblib.dump(model, f'{estacao}_v1.joblib')
-
-
-
-
-=======
         joblib.dump(model, f'{estacao}.joblib')
         upload_model_to_gcp(f'{estacao}.joblib')
->>>>>>> master
-
