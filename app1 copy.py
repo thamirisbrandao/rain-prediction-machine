@@ -24,18 +24,7 @@ st.header('Previsão de chuva para as próximas 24h')
 '''
 
 '''
-
-option = st.selectbox(
-    'Escolha uma estação meteorológica',
-    ('BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO', 'BERTIOGA',
-     'BRAGANCA PAULISTA', 'CACHOEIRA PAULISTA', 'CAMPOS DO JORDAO',
-     'CASA BRANCA', 'DRACENA', 'FRANCA', 'IGUAPE', 'ITAPEVA', 'ITAPIRA',
-     'ITATIAIA', 'ITUVERAVA', 'LINS', 'MARILIA', 'OURINHOS', 'PARATI',
-     'PIRACICABA', 'PRADOPOLIS', 'PRESIDENTE PRUDENTE', 'RANCHARIA',
-     'SAO CARLOS', 'SAO LUIS DO PARAITINGA', 'SAO MIGUEL ARCANJO',
-     'SAO PAULO - INTERLAGOS', 'SAO PAULO - MIRANTE', 'SAO SEBASTIAO',
-     'SAO SIMAO', 'SOROCABA', 'TAUBATE', 'TUPA', 'VALPARAISO', 'VOTUPORANGA'))
-
+data=CleanDataRpm()
 
 dia0 =datetime.date.today()#dia corrente
 delta = datetime.timedelta(days=1)#espaço de tempo
@@ -44,44 +33,12 @@ dia1=dia0+delta#dia para mais 24h
 d1 = st.date_input("Previsão para:", dia0, max_value = dia1, min_value=dia0)
 t1 = st.time_input('Hora', datetime.time(0, 0))
 
-'''
-
-'''
-data=CleanDataRpm()
-n_cidade=data.cidades.index(option)
-# st.write('view',n_cidade)
-df=data.clean_data(n_cidade)
-# st.write('temp',df.Temp.iloc[-1])
-
-# st.write(f"#### {option} {d1}")
-st.write('#### Previsão do tempo')
-
-if df.Chuva.iloc[-1] == 0:
-    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])}.')
-if df.Chuva.iloc[-1] > 0 and df.Chuva.iloc[-1] < 25:
-    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ☔')
-else:
-    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ⛈️')
+df_previsoes=pd.read_csv('exemplo_nat.csv')
+df_previsoes
 
 
-col1, col2, col3, col4 = st.columns(4)
-col1.metric("Temperatura", f'{df.Temp.iloc[-1]} °C',
-            f'{round(df.Temp.iloc[-1]-df.Temp.iloc[-24],ndigits=1)} °C')
-col2.metric("Vento", f'{round(df.Vel_vento.iloc[-1],ndigits=1)} m/s',
-        f'{round(df.Vel_vento.iloc[-1]-df.Vel_vento.iloc[-24],ndigits=1)} m/s')
-col3.metric("Umidade", f'{df.Umid.iloc[-1]} %',
-        f'{round(df.Umid.iloc[-1]-df.Umid.iloc[-24],ndigits=1)} %')
-col4.metric("Precipitação", f'{df.Chuva.iloc[-1]} mm',
-        f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
-
-
-# Chuva_ultimahora=[]
-#mudar para saida do model, por enqt lendo o ultimo dado de cada arquivo
-
-# for i in range(0,2):
-#     df= data.clean_data(i)
-#     Chuva_ultimahora.append(df.Chuva.iloc[-1])
-
+hora=st.slider('Previsão horária',0,24)
+print(hora)
 Chuva_ultimahora=[30, 20, 25, 0, 10, 60, 0, 0, 4]
 
 lat, lon, estacao = data.get_lat_lon(9)
@@ -90,7 +47,7 @@ coord['lon']=lon
 coord['estacao']=estacao
 coord.drop_duplicates('estacao')
 coord['Chuva']=Chuva_ultimahora
-
+print(coord)
 #definindo colormap por quantidade de chuva
 r,b,g = [],[],[]
 for mm in Chuva_ultimahora:
@@ -137,8 +94,6 @@ layer = pdk.Layer(
 
 '''
 
-
-
 '''
 
 # Set the viewport location
@@ -146,6 +101,59 @@ view_state = pdk.ViewState(latitude=-21.980353, longitude=-47.883927, zoom=5)
 st.subheader(f'Previsão de Chuva para SP em {dia0}')
 st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state,
                          map_style="mapbox://styles/mapbox/light-v10", tooltip=coord['Chuva']))
+
+
+option = st.selectbox(
+    'Escolha uma estação meteorológica',
+    ('BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO', 'BERTIOGA',
+     'BRAGANCA PAULISTA', 'CACHOEIRA PAULISTA', 'CAMPOS DO JORDAO',
+     'CASA BRANCA', 'DRACENA', 'FRANCA', 'IGUAPE', 'ITAPEVA', 'ITAPIRA',
+     'ITATIAIA', 'ITUVERAVA', 'LINS', 'MARILIA', 'OURINHOS', 'PARATI',
+     'PIRACICABA', 'PRADOPOLIS', 'PRESIDENTE PRUDENTE', 'RANCHARIA',
+     'SAO CARLOS', 'SAO LUIS DO PARAITINGA', 'SAO MIGUEL ARCANJO',
+     'SAO PAULO - INTERLAGOS', 'SAO PAULO - MIRANTE', 'SAO SEBASTIAO',
+     'SAO SIMAO', 'SOROCABA', 'TAUBATE', 'TUPA', 'VALPARAISO', 'VOTUPORANGA'))
+
+
+
+'''
+
+'''
+
+n_cidade=data.cidades.index(option)
+st.write('view',n_cidade)
+df=data.clean_data(n_cidade)
+# st.write('temp',df.Temp.iloc[-1])
+
+# st.write(f"#### {option} {d1}")
+st.write('#### Previsão do tempo')
+
+if df.Chuva.iloc[-1] == 0:
+    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])}.')
+if df.Chuva.iloc[-1] > 0 and df.Chuva.iloc[-1] < 25:
+    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ☔')
+else:
+    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ⛈️')
+
+
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Temperatura", f'{df.Temp.iloc[-1]} °C',
+            f'{round(df.Temp.iloc[-1]-df.Temp.iloc[-24],ndigits=1)} °C')
+col2.metric("Vento", f'{round(df.Vel_vento.iloc[-1],ndigits=1)} m/s',
+        f'{round(df.Vel_vento.iloc[-1]-df.Vel_vento.iloc[-24],ndigits=1)} m/s')
+col3.metric("Umidade", f'{df.Umid.iloc[-1]} %',
+        f'{round(df.Umid.iloc[-1]-df.Umid.iloc[-24],ndigits=1)} %')
+col4.metric("Precipitação", f'{df.Chuva.iloc[-1]} mm',
+        f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
+
+
+Chuva_ultimahora=[]
+# mudar para saida do model, por enqt lendo o ultimo dado de cada arquivo
+
+for i in range(0,2):
+    df= data.clean_data(i)
+    Chuva_ultimahora.append(df.Chuva.iloc[-1])
+
 
 # st.map(coord)
 '''
@@ -171,7 +179,7 @@ def plot_temp(days,min_t,max_t):
 
 st.subheader('Temperatura do ar (°C) nos útimos sete dias')
 plot_temp(df.datahora,df.Temp_min,df.Temp_max)
-
+breakpoint()
 '''
 
 
@@ -211,7 +219,3 @@ def plot_umi(days,umidade):
 
 st.subheader('Umidade Relativa % nos útimos sete dias')
 plot_umi(df.datahora,df.Umid)
-
-
-# st.line_chart(df.Temp.iloc[-72:])
-# st.line_chart(df.Vel_vento.iloc[-72:])

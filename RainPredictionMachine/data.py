@@ -13,14 +13,23 @@ class CleanDataRpm():
         self.client = storage.Client()
         self.pathh = os.path.join(os.path.dirname(os.path.dirname(__file__)),'raw_data','SP') #caminho geral
         self.files = [f for f in listdir(self.pathh) if isfile(join(self.pathh, f))] #lista de nomes de arquivos de dados
-        self.cidades=['BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO', 'BERTIOGA',
+        self.cidades=['BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO',
         'BRAGANCA PAULISTA', 'CACHOEIRA PAULISTA', 'CAMPOS DO JORDAO',
-        'CASA BRANCA', 'DRACENA', 'FRANCA', 'IGUAPE', 'ITAPEVA', 'ITAPIRA',
-        'ITATIAIA', 'ITUVERAVA', 'LINS', 'MARILIA', 'OURINHOS', 'PARATI',
-        'PIRACICABA', 'PRADOPOLIS', 'PRESIDENTE PRUDENTE', 'RANCHARIA',
-        'SAO CARLOS', 'SAO LUIS DO PARAITINGA', 'SAO MIGUEL ARCANJO',
+        'CASA BRANCA', 'DRACENA', 'FRANCA', 'ITAPEVA', 'ITAPIRA',
+        'ITUVERAVA', 'LINS', 'MARILIA', 'PARATI',
+        'PIRACICABA', 'PRADOPOLIS', 'PRESIDENTE PRUDENTE',
+        'SAO CARLOS', 'SAO LUIS DO PARAITINGA',
         'SAO PAULO - INTERLAGOS', 'SAO PAULO - MIRANTE', 'SAO SEBASTIAO',
         'SAO SIMAO', 'SOROCABA', 'TAUBATE', 'TUPA', 'VALPARAISO', 'VOTUPORANGA']
+
+        # ['BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO', 'BERTIOGA',
+        # 'BRAGANCA PAULISTA', 'CACHOEIRA PAULISTA', 'CAMPOS DO JORDAO',
+        # 'CASA BRANCA', 'DRACENA', 'FRANCA', 'IGUAPE', 'ITAPEVA', 'ITAPIRA',
+        # 'ITATIAIA', 'ITUVERAVA', 'LINS', 'MARILIA', 'OURINHOS', 'PARATI',
+        # 'PIRACICABA', 'PRADOPOLIS', 'PRESIDENTE PRUDENTE', 'RANCHARIA',
+        # 'SAO CARLOS', 'SAO LUIS DO PARAITINGA', 'SAO MIGUEL ARCANJO',
+        # 'SAO PAULO - INTERLAGOS', 'SAO PAULO - MIRANTE', 'SAO SEBASTIAO',
+        # 'SAO SIMAO', 'SOROCABA', 'TAUBATE', 'TUPA', 'VALPARAISO', 'VOTUPORANGA']
     #Criando variáveis organizacionais
 
     def get_data(self,n_cidade):#escolher um numero de 0 a 35

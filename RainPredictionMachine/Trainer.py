@@ -1,4 +1,5 @@
 from tensorflow.keras import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 from google.cloud import storage
 from tensorflow.keras.callbacks import EarlyStopping
@@ -16,7 +17,7 @@ MODEL_VERSION = 'v1_vitor_isa' # model version folder name (where the trained mo
 def upload_model_to_gcp(file):
     client = storage.Client()
     bucket = client.bucket(BUCKET_NAME)
-    blob = bucket.blob(f'models/{file}')
+    blob = bucket.blob(f'modelo_final/{file}')
     blob.upload_from_filename(file)
 
 def subsample_sequence(df, length):
@@ -95,7 +96,9 @@ if __name__ == "__main__":
     from RainPredictionMachine.data import CleanDataRpm
     cleaner = CleanDataRpm()
     for index,estacao in enumerate(cleaner.cidades):
-        df = cleaner.clean_data(index, gcp=False)
+        print(index)
+        print(estacao)
+        df = cleaner.clean_data(index, gcp=True)
         print('arquivos carregados')
         #split do treino e test
         X_train, y_train, X_test, y_test = split_train_test(df, 6000,72)
@@ -106,4 +109,5 @@ if __name__ == "__main__":
         #fit e early stopping
         model = fit_model(model, X_train, y_train)
         print('fit e early stopping')
-        joblib.dump(model, f'{estacao}_v1.joblib')
+        joblib.dump(model, f'{estacao}.joblib')
+        upload_model_to_gcp(f'{estacao}.joblib')
