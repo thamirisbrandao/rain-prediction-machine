@@ -1,0 +1,12 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/victor/code/thamirisbrandao/rain-prediction-machine'
+gcloud ai-platform jobs submit training rpm_20220523_101006 \
+	--job-dir gs://rain-prediction-machine/'trainings' \
+	--package-path RainPredictionMachine \
+	--module-name RainPredictionMachine.Trainer \
+	--python-version=3.7 \
+	--runtime-version=2.8 \
+	--region us-west1 \
+	--stream-logs
+make: Leaving directory '/home/victor/code/thamirisbrandao/rain-prediction-machine'
+ 

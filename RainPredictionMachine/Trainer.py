@@ -24,7 +24,6 @@ def upload_model_to_gcp(file):
 def subsample_sequence(df, length):
     index = np.random.randint(0, df.shape[0] - length)
     df_sample = df.iloc[index:index+length]
-
     return df_sample
 
 def split_subsample_sequence(df, length):
